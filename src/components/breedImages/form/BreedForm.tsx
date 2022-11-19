@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { Form, Button, Row, Col } from 'react-bootstrap'
+import { Form, Button, Row, Col, Alert } from 'react-bootstrap'
 import { useBreeds } from '@/components/breedImages/form/useBreeds'
 import { BreedFormType } from '@/components/breedImages/types/BreedFormType'
 import { useBreedForm } from '@/components/breedImages/form/useBreedForm'
@@ -12,8 +12,16 @@ type PropType = {
 }
 
 export const BreedForm: FC<PropType> = ({ onLoadImages, imageLoading }) => {
-  const { breeds, loading } = useBreeds()
+  const { breeds, loading: breedLoading, error } = useBreeds()
   const { subBreeds, register, handleSubmit, errors } = useBreedForm(breeds)
+
+  const loading = breedLoading || imageLoading
+
+  if (error) {
+    return (
+      <Alert variant="danger">Error: {error} (Try to reload the page)</Alert>
+    )
+  }
 
   return (
     <Form data-testid="form" noValidate onSubmit={handleSubmit(onLoadImages)}>
@@ -67,12 +75,8 @@ export const BreedForm: FC<PropType> = ({ onLoadImages, imageLoading }) => {
         </Col>
 
         <Col>
-          <Button
-            data-testid="button"
-            disabled={loading || imageLoading}
-            type="submit"
-          >
-            {loading || imageLoading ? 'Loading...' : 'View images'}
+          <Button data-testid="button" disabled={loading} type="submit">
+            {loading ? 'Loading...' : 'View images'}
           </Button>
         </Col>
       </Row>

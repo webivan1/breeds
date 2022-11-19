@@ -74,18 +74,13 @@ describe('Api request', () => {
       })
     )
 
-    // when subBreed is empty string
-    await api.fetchImages(quantity, breed, '')
+    const emptyValues = ['', undefined]
 
-    expect(httpClient.get).toHaveBeenCalledWith(
-      `/breed/${breed}/images/random/${quantity}`
-    )
-
-    // when subBreed is undefined
-    await api.fetchImages(quantity, breed, undefined)
-
-    expect(httpClient.get).toHaveBeenCalledWith(
-      `/breed/${breed}/images/random/${quantity}`
-    )
+    emptyValues.forEach(async (emptyValue) => {
+      await api.fetchImages(quantity, breed, emptyValue)
+      expect(httpClient.get).toHaveBeenCalledWith(
+        `/breed/${breed}/images/random/${quantity}`
+      )
+    })
   })
 })

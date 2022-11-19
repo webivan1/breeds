@@ -36,6 +36,7 @@ describe('Components - UI - Form - FieldSelect', () => {
       images: [],
       loading: false,
       fetchImages: async () => {},
+      error: undefined,
     }))
 
     const { getByTestId, queryByTestId } = await createComponent()
@@ -49,6 +50,7 @@ describe('Components - UI - Form - FieldSelect', () => {
       images: [],
       loading: true,
       fetchImages: async () => {},
+      error: undefined,
     }))
 
     const { getByTestId } = await createComponent()
@@ -62,11 +64,29 @@ describe('Components - UI - Form - FieldSelect', () => {
       images: ['http://example.com/image.jpg'],
       loading: false,
       fetchImages: async () => {},
+      error: undefined,
     }))
 
     const { getByTestId } = await createComponent()
 
     expect(getByTestId('form')).toBeInTheDocument()
     expect(getByTestId('images')).toBeInTheDocument()
+  })
+
+  test('should display error if request is failed', async () => {
+    jest.spyOn(hook, 'useImages').mockImplementation(() => ({
+      images: [],
+      loading: false,
+      fetchImages: async () => {},
+      error: 'Error message',
+    }))
+
+    const { getByTestId, queryByTestId, getByText } = await createComponent()
+
+    expect(getByTestId('form')).toBeInTheDocument()
+    expect(queryByTestId('images')).not.toBeInTheDocument()
+    expect(
+      getByText('Error: Error message (Try to fetch again please)')
+    ).toBeInTheDocument()
   })
 })
