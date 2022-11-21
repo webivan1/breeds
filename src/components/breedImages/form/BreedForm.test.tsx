@@ -1,5 +1,5 @@
-import React from 'react'
-import { render, act, RenderResult } from '@testing-library/react'
+import { vi } from 'vitest'
+import { render, act, RenderResult, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { BreedForm } from '@/components/breedImages/form/BreedForm'
 import { httpClient } from '@/services/httpClient'
@@ -14,7 +14,7 @@ const breedList = {
 
 describe('Components - Breed images - Form - BreedForm', () => {
   beforeAll(() => {
-    jest.spyOn(httpClient, 'get').mockImplementation(() =>
+    vi.spyOn(httpClient, 'get').mockImplementation(() =>
       Promise.resolve({
         data: breedList,
       })
@@ -22,23 +22,25 @@ describe('Components - Breed images - Form - BreedForm', () => {
   })
 
   afterAll(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const createComponent = async (handler: () => void, loading: boolean) => {
     let component: RenderResult = {} as RenderResult
 
-    await act(async () => {
-      component = render(
-        <BreedForm onLoadImages={handler} imageLoading={loading} />
-      )
-    })
+    await act(() =>
+      waitFor(() => {
+        component = render(
+          <BreedForm onLoadImages={handler} imageLoading={loading} />
+        )
+      })
+    )
 
     return component
   }
 
   test('should render form and display list of breed', async () => {
-    const { getByTestId, getByRole } = await createComponent(jest.fn(), false)
+    const { getByTestId, getByRole } = await createComponent(vi.fn(), false)
 
     const field = getByTestId('breed')
 
@@ -53,30 +55,27 @@ describe('Components - Breed images - Form - BreedForm', () => {
   })
 
   test('should select breed and subBreed field must be hidden', async () => {
-    const { getByTestId, queryByTestId } = await createComponent(
-      jest.fn(),
-      false
-    )
+    const { getByTestId, queryByTestId } = await createComponent(vi.fn(), false)
 
     const field = getByTestId('breed')
 
-    userEvent.selectOptions(field, 'breed1')
+    await userEvent.selectOptions(field, 'breed1')
 
     expect(queryByTestId('subBreed')).not.toBeInTheDocument()
   })
 
   test('should display a sub breed field', async () => {
-    const { getByTestId } = await createComponent(jest.fn(), false)
+    const { getByTestId } = await createComponent(vi.fn(), false)
 
     const field = getByTestId('breed')
 
-    userEvent.selectOptions(field, 'breed2')
+    await act(() => userEvent.selectOptions(field, 'breed2'))
 
     expect(getByTestId('subBreed')).toBeInTheDocument()
   })
 
   test('should disable button when loading is active', async () => {
-    const { getByTestId } = await createComponent(jest.fn(), true)
+    const { getByTestId } = await createComponent(vi.fn(), true)
 
     const button = getByTestId('button')
 
@@ -86,11 +85,11 @@ describe('Components - Breed images - Form - BreedForm', () => {
   })
 
   test('should display validation error', async () => {
-    const { getByTestId } = await createComponent(jest.fn(), false)
+    const { getByTestId } = await createComponent(vi.fn(), false)
 
     const button = getByTestId('button')
 
-    await act(async () => userEvent.click(button))
+    await act(() => waitFor(() => userEvent.click(button)))
 
     const breedField = getByTestId('breed')
 
@@ -101,22 +100,21 @@ describe('Components - Breed images - Form - BreedForm', () => {
     expect(quantityField).not.toHaveClass('is-invalid')
   })
 
-  test('number of images must be more than 0 and less or equol then 50', async () => {
-    const { getByTestId } = await createComponent(jest.fn(), false)
+  test('number of images must be more than 0 and less or equal then 50', async () => {
+    const { getByTestId } = await createComponent(vi.fn(), false)
 
     // initial validation
-    await act(async () => userEvent.click(getByTestId('button')))
+    await act(async () => await userEvent.click(getByTestId('button')))
 
     const checkField = async (value: string | number, valid: boolean) => {
-      const quantityField = getByTestId('quantity') as HTMLInputElement
-
-      quantityField.setSelectionRange(0, 100)
+      const quantityField = (await getByTestId('quantity')) as HTMLInputElement
 
       await act(async () => {
-        userEvent.type(quantityField, `{del}${value}`)
+        await userEvent.clear(quantityField)
+        await userEvent.type(quantityField, `${value}`)
       })
 
-      expect(quantityField).toHaveValue(String(value))
+      expect(getByTestId('quantity')).toHaveValue(String(value))
 
       if (valid) {
         expect(quantityField).not.toHaveClass('is-invalid')
@@ -136,7 +134,7 @@ describe('Components - Breed images - Form - BreedForm', () => {
   })
 
   test('should fetch images', async () => {
-    const onLoadImages = jest.fn()
+    const onLoadImages = vi.fn()
 
     const { getByTestId } = await createComponent(onLoadImages, false)
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import { vi } from 'vitest'
 import { act, render, RenderResult } from '@testing-library/react'
 import { BreedImages } from '@/components/breedImages/BreedImages'
 import { httpClient } from '@/services/httpClient'
@@ -6,7 +6,7 @@ import * as hook from '@/components/breedImages/useImages'
 
 describe('Components - UI - Form - FieldSelect', () => {
   beforeEach(() => {
-    jest.spyOn(httpClient, 'get').mockImplementation(() =>
+    vi.spyOn(httpClient, 'get').mockImplementation(() =>
       Promise.resolve({
         data: {
           message: {
@@ -18,7 +18,7 @@ describe('Components - UI - Form - FieldSelect', () => {
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const createComponent = async () => {
@@ -32,10 +32,12 @@ describe('Components - UI - Form - FieldSelect', () => {
   }
 
   test('should contain form and no images', async () => {
-    jest.spyOn(hook, 'useImages').mockImplementation(() => ({
+    vi.spyOn(hook, 'useImages').mockImplementation(() => ({
       images: [],
       loading: false,
-      fetchImages: async () => {},
+      fetchImages: async () => {
+        // do nothing
+      },
       error: undefined,
     }))
 
@@ -46,10 +48,12 @@ describe('Components - UI - Form - FieldSelect', () => {
   })
 
   test('should contain form and loading images', async () => {
-    jest.spyOn(hook, 'useImages').mockImplementation(() => ({
+    vi.spyOn(hook, 'useImages').mockImplementation(() => ({
       images: [],
       loading: true,
-      fetchImages: async () => {},
+      fetchImages: async () => {
+        // do nothing
+      },
       error: undefined,
     }))
 
@@ -60,10 +64,12 @@ describe('Components - UI - Form - FieldSelect', () => {
   })
 
   test('should contain form and some images', async () => {
-    jest.spyOn(hook, 'useImages').mockImplementation(() => ({
+    vi.spyOn(hook, 'useImages').mockImplementation(() => ({
       images: ['http://example.com/image.jpg'],
       loading: false,
-      fetchImages: async () => {},
+      fetchImages: async () => {
+        // do nothing
+      },
       error: undefined,
     }))
 
@@ -74,10 +80,12 @@ describe('Components - UI - Form - FieldSelect', () => {
   })
 
   test('should display error if request is failed', async () => {
-    jest.spyOn(hook, 'useImages').mockImplementation(() => ({
+    vi.spyOn(hook, 'useImages').mockImplementation(() => ({
       images: [],
       loading: false,
-      fetchImages: async () => {},
+      fetchImages: async () => {
+        // do nothing
+      },
       error: 'Error message',
     }))
 
