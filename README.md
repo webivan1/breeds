@@ -6,11 +6,19 @@ Api url [dog.ceo](https://dog.ceo/dog-api/documentation/).
 
 `npm install`
 
-Open [localhost:3000](http://localhost:3000)
-
 ### Usage
 
-`npm start`
+`npm run dev`
+
+Open [localhost:5173](http://localhost:5173/)
+
+### Build
+
+`npm run build`
+
+Install server: `npm install -g serve`
+
+Run command `serve -s dist`
 
 ### Tests
 
@@ -18,6 +26,5 @@ Open [localhost:3000](http://localhost:3000)
 
 ### Lint 
 
-Prettier format: `npm run format`
-Eslint fix: `npm run lint`
-Eslint check: `npm run link:check`
+- Prettier format: `npm run format`
+- Eslint fix: `npm run lint`

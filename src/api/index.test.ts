@@ -1,9 +1,10 @@
+import { vi } from 'vitest'
 import { httpClient } from '@/services/httpClient'
 import api from '@/api'
 
 describe('Api request', () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   test('should replace object of breed with array of breed for fetchBreedList', async () => {
@@ -16,7 +17,7 @@ describe('Api request', () => {
     }
 
     // Mock http request
-    jest.spyOn(httpClient, 'get').mockImplementation(() =>
+    vi.spyOn(httpClient, 'get').mockImplementation(() =>
       Promise.resolve({
         data: mockResponse,
       })
@@ -45,7 +46,7 @@ describe('Api request', () => {
     const quantity = 25
 
     // Mock http request
-    jest.spyOn(httpClient, 'get').mockImplementation(() =>
+    vi.spyOn(httpClient, 'get').mockImplementation(() =>
       Promise.resolve({
         data: mockResponse,
       })
@@ -68,19 +69,20 @@ describe('Api request', () => {
     const quantity = 10
 
     // Mock http request
-    jest.spyOn(httpClient, 'get').mockImplementation(() =>
+    vi.spyOn(httpClient, 'get').mockImplementation(() =>
       Promise.resolve({
         data: mockResponse,
       })
     )
 
-    const emptyValues = ['', undefined]
-
-    emptyValues.forEach(async (emptyValue) => {
-      await api.fetchImages(quantity, breed, emptyValue)
+    const checkEmptyValues = async (value: string | undefined) => {
+      await api.fetchImages(quantity, breed, value)
       expect(httpClient.get).toHaveBeenCalledWith(
         `/breed/${breed}/images/random/${quantity}`
       )
-    })
+    }
+
+    await checkEmptyValues('')
+    await checkEmptyValues(undefined)
   })
 })
