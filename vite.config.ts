@@ -7,7 +7,6 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        // this is required for the SCSS modules
         find: /^~(.*)$/,
         replacement: '$1',
       },
@@ -16,10 +15,6 @@ export default defineConfig({
         replacement: '/src',
       },
     ],
-    // alias: {
-    //   '@': '/src',
-    //   '~': '/node_modules',
-    // },
   },
   test: {
     globals: true,
